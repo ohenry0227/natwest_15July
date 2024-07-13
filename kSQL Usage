@@ -1,0 +1,26 @@
+Start ksqlDB's server
+ksqlDB is packaged with a startup script for development use. We'll use that here.
+When you're ready to run it as a service, you'll want to manage ksqlDB with something like systemd.
+
+#/opt/ksqldb/bin/ksql-server-start /opt/ksqldb/etc/ksqldb/ksql-server.properties
+
+Open a terminal and paste the following commands. Excute as a single command.
+ kafka-console-producer \
+      --broker-list kafka0:9092 \
+      --topic new_orders \
+      --property "parse.key=true" \
+      --property "key.separator=:"<<EOF
+1:{"order_id":1,"total_amount":10.50,"customer_name":"Bob Smith"}
+2:{"order_id":2,"total_amount":3.32,"customer_name":"Sarah Black"}
+3:{"order_id":3,"total_amount":21.00,"customer_name":"Emma Turner"}
+EOF
+
+
+In the KSQL CLI, register both topics as KSQL streams:
+CREATE STREAM NEW_ORDERS (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR)
+WITH (KAFKA_TOPIC='new_orders', VALUE_FORMAT='JSON');
+
+Run the following to tell KSQL to read from the beginning of the topic:
+SET 'auto.offset.reset' = 'earliest';
+
+select * from new_orders;
