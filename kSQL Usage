@@ -1,3 +1,15 @@
+# sh kafka-topics.sh --create --topic streams-plaintext-input --bootstrap-server kafka0:9092 --partitions 1 --replication-factor 1
+# sh kafka-topics.sh --create --topic streams-wordcount-output --bootstrap-server kafka0:9092 --partitions 1 --replication-factor 1
+
+sh kafka-console-producer.sh --broker-list kafka0:9092 --topic streams-plaintext-input
+
+sh kafka-console-consumer.sh --topic streams-wordcount-output --from-beginning \
+--bootstrap-server kafka0:9092 \
+--property print.key=true \
+--property
+value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+
+
 Start ksqlDB's server
 ksqlDB is packaged with a startup script for development use. We'll use that here.
 When you're ready to run it as a service, you'll want to manage ksqlDB with something like systemd.
